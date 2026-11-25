@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#180e25"><title>Mahjong Emas — Virtual</title>
+<style>
+:root{--gold:#ffd36a;--gold2:#a96518;--bg:#130b1e;--panel:#271533;--red:#9f2028}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#51264a 0,#21102e 42%,#100917 100%);color:#fff4d5;font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;padding:14px}
+.app{max-width:520px;margin:auto}.top{text-align:center;padding:10px 0 14px}.brand{font-weight:1000;letter-spacing:3px;font-size:clamp(26px,7vw,38px);color:var(--gold);text-shadow:0 2px #7b3512,0 0 18px #ffb52c;cursor:pointer}.sub{font-size:11px;letter-spacing:3px;color:#e6bd80}
+.panel{background:linear-gradient(145deg,#492747,#21152e 60%,#31162a);border:2px solid #bd833b;border-radius:18px;padding:14px;box-shadow:0 10px 30px #0008,inset 0 0 18px #ffce4a16}
+.balance{display:flex;justify-content:space-between;align-items:center;gap:8px}.small{font-size:11px;color:#e7c99d}.amount{font-size:25px;font-weight:900;color:#ffe28d;font-variant-numeric:tabular-nums}
+.board-wrap{margin:14px 0;padding:9px;border-radius:15px;background:linear-gradient(135deg,#f3c46a,#713b21 35%,#e3ae52 70%,#512519);box-shadow:0 5px 0 #4b2518}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:#170d1b;padding:7px;border-radius:9px}
+.tile{aspect-ratio:1;display:grid;place-items:center;border-radius:9px;background:linear-gradient(145deg,#fff4d2,#d4a95e);border:2px solid #f8d58a;box-shadow:inset 0 -4px 0 #9b652d; font-size:clamp(24px,7vw,39px);color:#251322;position:relative;overflow:hidden}
+.tile.win{animation:glow .7s infinite alternate;border-color:#fff6a5;box-shadow:0 0 12px #ffe86a,inset 0 0 10px #fff}
+@keyframes glow{to{filter:brightness(1.35);transform:scale(.97)}}
+.result{text-align:center;min-height:25px;color:#ffe28d;font-weight:800;margin:7px 0}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.control{background:#1b1025;border:1px solid #8b6037;border-radius:12px;padding:10px;text-align:center}.control label{display:block;font-size:11px;color:#d9bd92;margin-bottom:7px}
+button{border:0;border-radius:10px;padding:11px 14px;font-weight:900;color:#301707;background:linear-gradient(#ffe59a,#d89a39);box-shadow:0 3px 0 #88511e;cursor:pointer}button:active{transform:translateY(2px);box-shadow:0 1px 0 #88511e}button:disabled{opacity:.45}
+.stepper{display:flex;align-items:center;justify-content:center;gap:12px}.stepper button{padding:5px 12px}.stepper b{min-width:45px}
+.multis{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}.multi{padding:8px 11px;background:#493047;color:#ffe3b1;box-shadow:none;border:1px solid #9c7547}.multi.active{background:#ffd36a;color:#321808}
+.actions{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:12px}.spin{font-size:18px;padding:15px 8px;background:linear-gradient(#fff0a5,#e9a832)}.secondary{background:linear-gradient(#e8d5ae,#b98b56)}.auto.active{background:linear-gradient(#ffb5a0,#c64b3d);color:white}
+.note{text-align:center;font-size:10px;color:#bba5c3;margin:13px 4px 5px;line-height:1.5}
+.admin{display:none;margin-top:12px}.admin.show{display:block}.admin input{width:100%;padding:10px;border-radius:8px;border:1px solid #ad824d;background:#160d1d;color:white;margin:5px 0}
+.toast{color:#ffdf88;font-size:12px;min-height:18px;text-align:center}
+@media(min-width:430px){body{padding:22px}.tile{font-size:42px}}
+</style></head>
+<body><main class="app">
+<header class="top"><div class="brand" id="brand">MAHJONG EMAS</div><div class="sub">VIRTUAL REELS • PLAY FOR FUN</div></header>
+<section class="panel">
+<div class="balance"><div><div class="small">SALDO KOIN VIRTUAL</div><div class="amount" id="balance">10.000</div></div><div style="text-align:right"><div class="small">KEMENANGAN TERAKHIR</div><div class="amount" style="font-size:19px" id="lastWin">0</div></div></div>
+<div class="board-wrap"><div class="board" id="board" aria-label="Papan permainan"></div></div>
+<div class="result" id="result">Tekan PUTAR untuk mulai!</div>
+<div class="controls">
+ <div class="control"><label>NILAI TARUHAN</label><div class="stepper"><button id="minus">−</button><b id="bet">100</b><button id="plus">+</button></div></div>
+ <div class="control"><label>PENGALI VIRTUAL</label><div class="multis" id="multis"><button class="multi active" data-m="1">x1</button><button class="multi" data-m="2">x2</button><button class="multi" data-m="3">x3</button><button class="multi" data-m="5">x5</button></div></div>
+</div>
+<div class="actions"><button class="spin" id="spin">▶ PUTAR</button><button class="secondary" id="turbo">⚡ TURBO OFF</button><button class="secondary auto" id="auto">AUTO</button></div>
+<div class="toast" id="toast"></div>
+</section>
+<div class="note">Game hiburan dengan koin virtual saja. Tidak memakai uang asli, tidak ada deposit atau penarikan. Kemenangan ditentukan secara acak.</div>
+<section class="panel admin" id="admin">
+<strong>⚙ PANEL ADMIN DEMO</strong><div class="small">Pengaturan saldo virtual lokal perangkat ini.</div>
+<input id="adminPin" type="password" inputmode="numeric" placeholder="PIN admin">
+<button id="unlock">BUKA PANEL</button>
+<div id="adminControls" style="display:none"><label class="small">Atur saldo koin</label><input id="newBalance" type="number" min="0" value="10000"><button id="saveBalance">SIMPAN SALDO</button><button id="reset" class="secondary">RESET GAME</button></div>
+</section></main>
+<script>
+(()=>{
+const $=id=>document.getElementById(id), symbols=['🀄','🀅','🀆','🀇','🀙','🀐','🀄','🀃','🀂','🀁','🀀','🀚'];
+let balance=Number(localStorage.getItem('me_balance')||10000),bet=100,mult=1,busy=false,turbo=false,autoTimer=null,autoLeft=0,clicks=0;
+let grid=[],wins=[];
+const fmt=n=>Math.floor(n).toLocaleString('id-ID');
+function save(){localStorage.setItem('me_balance',String(balance));$('balance').textContent=fmt(balance);$('bet').textContent=fmt(bet)}
+function makeGrid(){return Array.from({length:25},()=>symbols[Math.floor(Math.random()*symbols.length)])}
+function render(){const board=$('board');board.innerHTML='';grid.forEach((s,i)=>{let d=document.createElement('div');d.className='tile'+(wins.includes(i)?' win':'');d.textContent=s;board.appendChild(d)})}
+function findWins(){let found=new Set();for(let r=0;r<5;r++){let run=0;for(let c=0;c<5;c++){let i=r*5+c;if(c===0||grid[i]===grid[i-1])run++;else run=1;if(run>=3){for(let k=c-run+1;k<=c;k++)found.add(r*5+k)}}}for(let c=0;c<5;c++){let run=0;for(let r=0;r<5;r++){let i=r*5+c;if(r===0||grid[i]===grid[i-5])run++;else run=1;if(run>=3){for(let k=r-run+1;k<=r;k++)found.add(k*5+c)}}}return [...found]}
+function stopAuto(){if(autoTimer){clearTimeout(autoTimer);autoTimer=null}$('auto').textContent='AUTO';$('auto').classList.remove('active')}
+function spin(){if(busy)return;if(balance<bet){$('result').textContent='Koin tidak cukup. Kurangi taruhan.';stopAuto();return}busy=true;balance-=bet;save();$('result').textContent='Mengacak simbol…';wins=[];let delay=turbo?120:650;grid=makeGrid();render();setTimeout(()=>{wins=findWins();let reward=wins.length?bet*mult*Math.max(1,Math.floor(wins.length/3))*2:0;balance+=reward;$('lastWin').textContent=fmt(reward);$('result').textContent=reward?'✨ MENANG +'+fmt(reward)+' KOIN!':'Belum menang, coba lagi!';if(wins.length)render();save();busy=false;if(autoLeft>0){autoLeft--;if(autoLeft===0)stopAuto();else autoTimer=setTimeout(spin,turbo?180:700)}},delay)}
+$('spin').onclick=spin;$('minus').onclick=()=>{bet=Math.max(50,bet-50);$('bet').textContent=fmt(bet)};$('plus').onclick=()=>{bet=Math.min(5000,bet+50);$('bet').textContent=fmt(bet)};
+document.querySelectorAll('.multi').forEach(b=>b.onclick=()=>{mult=Number(b.dataset.m);document.querySelectorAll('.multi').forEach(x=>x.classList.toggle('active',x===b))});
+$('turbo').onclick=()=>{turbo=!turbo;$('turbo').textContent=turbo?'⚡ TURBO ON':'⚡ TURBO OFF'};
+$('auto').onclick=()=>{if(autoTimer){stopAuto();return}autoLeft=10;$('auto').textContent='STOP (10)';$('auto').classList.add('active');spin()};
+$('brand').onclick=()=>{clicks++;if(clicks>=5){$('admin').classList.toggle('show');clicks=0}};
+$('unlock').onclick=()=>{if($('adminPin').value==='112233'){$('adminControls').style.display='block';$('toast').textContent='Panel admin terbuka.'}else $('toast').textContent='PIN salah.'};
+$('saveBalance').onclick=()=>{balance=Math.max(0,Number($('newBalance').value)||0);save();$('toast').textContent='Saldo virtual disimpan.'};
+$('reset').onclick=()=>{balance=10000;bet=100;mult=1;save();$('lastWin').textContent='0';$('result').textContent='Game direset.';$('newBalance').value=10000};
+grid=makeGrid();render();save();
+})();
+</script></body></html>
